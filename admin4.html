@@ -120,6 +120,31 @@
 <button class="danger" onclick="penalty()">GIVE PENALTY (-500)</button>
 
 <hr>
+<script>
+    function listenPlayers(callback) {
+        db.ref("players").on("value", (snap) => {
+            callback(snap.val() || {});
+        });
+    }
+
+    function listenTurn(callback) {
+        db.ref("currentTurn").on("value", (snap) => {
+            callback(snap.val());
+        });
+    }
+
+    function listenTurnOrder(callback) {
+        db.ref("turnOrder").on("value", (snap) => {
+            callback(snap.val() || []);
+        });
+    }
+
+    function listenCurrentTurn(callback) {
+        db.ref("currentTurn").on("value", (snap) => {
+            callback(snap.val() || null);
+        });
+    }
+</script>
 
 <script>
 let players = {};
@@ -534,18 +559,22 @@ function lockAndSave() {
   alert("Turn order locked!");
   renderTurnOrder();
 }
+
+
 /* =========================
    INIT
 ========================= */
-window.onload = () => {
+function boot() {
   syncTurnOrderWithPlayers();
   renderAll();
-};
+}
+
+window.onload = boot;
 
 setInterval(() => {
   syncTurnOrderWithPlayers();
   renderAll();
-}, 1000);
+}, 800);
 </script>
 
 </body>
