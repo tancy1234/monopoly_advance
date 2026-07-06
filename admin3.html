@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Game Admin Panel</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      padding: 20px;
+    }
+
+    .card {
+      background: #222;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+
+    button, input, select {
+      padding: 8px;
+      margin: 5px;
+    }
+
+    button { cursor: pointer; }
+
+    .danger { background: red; color: white; }
+    .good { background: green; color: white; }
+  </style>
+</head>
+
+<body>
+
+<h2>🎮 Admin Panel</h2>
+
+<div id="players"></div>
+
+<hr>
+
+<h3>🗑 Remove Player</h3>
+<select id="removePlayer"></select>
+<button class="danger" onclick="removePlayerFn()">REMOVE</button>
+
+<hr>
+
+<h3>📌 Current Turn</h3>
+<span id="liveTurn"></span>
+<button onclick="nextTurn()">NEXT TURN</button>
+
+<hr>
+
+<h3>🎯 Turn Order</h3>
+<div id="orderList"></div>
+
+<script>
+/* ================= DATA ================= */
+function getPlayers() {
+  return JSON.parse(localStorage.getItem("players") || "{}");
+}
+
+function savePlayers(p) {
+  localStorage.setItem("players", JSON.stringify(p));
+}
+
+function getOrder() {
+  return JSON.parse(localStorage.getItem("turnOrder") || "[]");
+}
+
+function saveOrder(o) {
+  localStorage.setItem("turnOrder", JSON.stringify(o));
+}
+
+function getCurrentTurn() {
+  return localStorage.getItem("currentTurn");
+}
+
+function setCurrentTurn(p) {
+  localStorage.setItem("currentTurn", p);
+}
+
+/* ================= MAIN RENDER ================= */
+function render() {
+  let players = getPlayers();
+  let order = getOrder();
+
+  /* PLAYER LIST */
+  let html = "<h3>Players</h3>";
+  Object.keys(players).forEach(p => {
+    html += `
+      <div class="card">
+        ${p} - ${players[p].name}
+      </div>
+    `;
+  });
+
+  document.getElementById("players").innerHTML = html;
+
+  /* DROPDOWN */
+  let sel = document.getElementById("removePlayer");
+  sel.innerHTML = "";
+  Object.keys(players).forEach(p => {
+    let opt = document.createElement("option");
+    opt.value = p;
+    opt.textContent = p;
+    sel.appendChild(opt);
+  });
+
+  /* TURN ORDER */
+  let orderHtml = "";
+  order.forEach((p, i) => {
+    orderHtml += `
+      <div class="card">
+        ${i + 1}. ${p}
+        <button onclick="moveUp(${i})">⬆</button>
+        <button onclick="moveDown(${i})">⬇</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("orderList").innerHTML = orderHtml;
+
+  /* TURN DISPLAY */
+  document.getElementById("liveTurn").innerText = getCurrentTurn() || "Not started";
+}

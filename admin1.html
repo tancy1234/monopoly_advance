@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Game Master Panel</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      padding: 20px;
+    }
+
+    .card {
+      background: #222;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+
+    button, input, select {
+      padding: 8px;
+      margin: 5px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .danger { background: red; color: white; }
+    .good { background: green; color: white; }
+    .warn { background: orange; }
+  </style>
+</head>
+
+<body>
+
+<h2>🎮 Game Master Panel</h2>
+
+<div id="players"></div>
+
+<hr>
+
+<h3>🟢 Game Control</h3>
+<button class="good" onclick="startGame()">START GAME</button>
+<button class="danger" onclick="resetGame()">RESET GAME</button>
+
+<hr>
+
+<h3>🔁 Turn System</h3>
+<h3>📌 Current Turn: <span id="liveTurn"></span></h3>
+<button onclick="nextTurn()">NEXT TURN</button>
+<p id="turnInfo"></p>
+
+<hr>
+
+<h3>🎯 Turn Order Setup</h3>
+
+<p>Click to set order (simple version):</p>
+
+<div id="orderList"></div>
+
+<button onclick="saveTurnOrder()">SAVE TURN ORDER</button>
+<hr>
+
+<h3>💰 Edit Money</h3>
+<select id="moneyPlayer"></select>
+<input id="moneyAmount" placeholder="Amount">
+<button onclick="addMoney()">+ ADD</button>
+<button class="danger" onclick="removeMoney()">- REMOVE</button>
+
+<hr>
+
+<h3>⚡ Penalty System</h3>
+<select id="penaltyPlayer"></select>
+<button class="danger" onclick="penalty()">GIVE PENALTY (-500)</button>
+
+<script>
+let turnIndex = 0;
+
+/* ---------------- DATA ---------------- */
+function getPlayers() {
+  return JSON.parse(localStorage.getItem("players") || "{}");
+}
+
+function savePlayers(p) {
+  localStorage.setItem("players", JSON.stringify(p));
+}
+
+/* ---------------- RENDER ---------------- */
+function render() {
+  let players = getPlayers();
+
+  let html = "<h3>📜 Players</h3>";
+
+  for (let char in players) {
+    html += `
+      <div class="card">
+        <b>${char.toUpperCase()}</b><br>
+        Name: ${players[char].name}<br>
+        Gold: ${players[char].gold || 0}
+      </div>
+    `;
+  }
+
+  document.getElementById("players").innerHTML = html;
+
+  updateSelect();
+}
+
+function updateSelect() {
+  let players = getPlayers();
+
+  let moneySel = document.getElementById("moneyPlayer");
+  let penaltySel = document.getElementById("penaltyPlayer");
+
+  moneySel.innerHTML = "";
+  penaltySel.innerHTML = "";
+
+  for (let char in players) {
+    moneySel.innerHTML += `<option value="${char}">${char}</option>`;
+    penaltySel.innerHTML += `<option value="${char}">${char}</option>`;
+  }
+}
+
+/* ---------------- GAME CONTROL ---------------- */
+function startGame() {
+  localStorage.setItem("gameStarted", "true");
+  alert("Game Started!");
+}
+
+function resetGame() {
+  localStorage.removeItem("players");
+  localStorage.removeItem("gameStarted");
+  alert("Game Reset!");
+  render();
+}
+
+/* ---------------- TURN SYSTEM ---------------- */
+function nextTurn() {
+  let players = Object.keys(getPlayers());
+
+  if (players.length === 0) return;
+
+  turnIndex = (turnIndex + 1) % players.length;
+
+  localStorage.setItem("currentTurn", players[turnIndex]);
+
+  document.getElementById("turnInfo").innerText =
+    "Current Turn: " + players[turnIndex];
+}
+
+/* ---------------- MONEY SYSTEM ---------------- */
+function addMoney() {
+  let players = getPlayers();
+  let p = document.getElementById("moneyPlayer").value;
+  let amt = parseInt(document.getElementById("moneyAmount").value);
+
+  if (!players[p]) return;
+
+  players[p].gold = (players[p].gold || 0) + amt;
+
+  savePlayers(players);
+  render();
+}
+
+function removeMoney() {
+  let players = getPlayers();
+  let p = document.getElementById("moneyPlayer").value;
+  let amt = parseInt(document.getElementById("moneyAmount").value);
+
+  if (!players[p]) return;
+
+  players[p].gold = (players[p].gold || 0) - amt;
+
+  savePlayers(players);
+  render();
+}
+
+/* ---------------- PENALTY ---------------- */
+function penalty() {
+  let players = getPlayers();
+  let p = document.getElementById("penaltyPlayer").value;
+
+  if (!players[p]) return;
+
+  players[p].gold -= 500;
+
+  savePlayers(players);
+  render();
+
+  alert(p + " got penalty -500");
+}
+
+/* ---------------- TURN ORDER SYSTEM ---------------- */
+
+function initTurnOrder() {
+  let players = Object.keys(getPlayers());
+
+  if (!localStorage.getItem("turnOrder")) {
+    localStorage.setItem("turnOrder", JSON.stringify(players));
+  }
+
+  renderTurnOrder();
+}
+
+function syncTurnToGameStart() {
+  let order = JSON.parse(localStorage.getItem("turnOrder") || "[]");
+  let current = localStorage.getItem("currentTurn");
+
+  // 如果还没有 currentTurn，就设第一个玩家
+  if (!current && order.length > 0) {
+    localStorage.setItem("currentTurn", order[0]);
+  }
+}
+
+function renderTurnOrder() {
+  let order = JSON.parse(localStorage.getItem("turnOrder") || "[]");
+
+  let html = "";
+
+  order.forEach((p, i) => {
+    html += `
+      <div class="card">
+        ${i + 1}. ${p}
+        <button onclick="moveUp(${i})">⬆</button>
+        <button onclick="moveDown(${i})">⬇</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("orderList").innerHTML = html;
+}
+
+function moveUp(index) {
+  let order = JSON.parse(localStorage.getItem("turnOrder"));
+
+  if (index === 0) return;
+
+  [order[index - 1], order[index]] = [order[index], order[index - 1]];
+
+  localStorage.setItem("turnOrder", JSON.stringify(order));
+  renderTurnOrder();
+}
+
+function moveDown(index) {
+  let order = JSON.parse(localStorage.getItem("turnOrder"));
+
+  if (index === order.length - 1) return;
+
+  [order[index + 1], order[index]] = [order[index], order[index + 1]];
+
+  localStorage.setItem("turnOrder", JSON.stringify(order));
+  renderTurnOrder();
+}
+
+function saveTurnOrder() {
+  alert("Turn order saved!");
+}
+
+/* FIX YOUR TURN SYSTEM (ADD THIS ONLY) */
+function nextTurn() {
+  let order = JSON.parse(localStorage.getItem("turnOrder") || "[]");
+
+  if (order.length === 0) return;
+
+  let current = localStorage.getItem("currentTurn");
+
+  let index = order.indexOf(current);
+
+  // 🔥 ADD THIS SAFETY FIX
+  if (index === -1) {
+    index = 0;
+    localStorage.setItem("currentTurn", order[0]);
+  }
+
+  
+}
+
+function renderTurnUI() {
+  let current = localStorage.getItem("currentTurn") || "Not started";
+  document.getElementById("liveTurn").innerText = current;
+}
+/* ---------------- INIT ---------------- */
+render();
+setInterval(() => {
+  render();
+  renderTurnUI();
+}, 1000);
+initTurnOrder();
+
+syncTurnToGameStart();
+renderTurnUI();
+</script>
+
+</body>
+</html>

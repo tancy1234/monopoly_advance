@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Monopoly Game</title>
+</head>
+
+<body>
+<h2>Loading Game...</h2>
+
+<script>
+// 读取 URL 参数（NFC 会用这个）
+const urlParams = new URLSearchParams(window.location.search);
+const character = urlParams.get("character");
+
+// 读取已绑定玩家
+let players = JSON.parse(localStorage.getItem("players") || "{}");
+
+// 1️⃣ 如果 NFC 进来（有 character）
+if (character) {
+  
+  // 去绑定页面
+  window.location.href = "bind.html?character=" + character;
+
+} 
+// 2️⃣ 如果没有绑定任何人 → 进等待页
+
+if (character && localStorage.getItem("players")) {
+  let players = JSON.parse(localStorage.getItem("players"));
+
+  if (players[character]) {
+    // 已经绑定 → 不要重新绑
+    window.location.href = "game.html";
+  } else {
+    window.location.href = "bind.html?character=" + character;
+  }
+}
+</script>
+
+</body>
+</html>

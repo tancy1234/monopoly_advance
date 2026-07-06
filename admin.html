@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Game Master Panel</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: white;
+      padding: 20px;
+    }
+
+    .card {
+      background: #222;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+
+    button, input, select {
+      padding: 8px;
+      margin: 5px;
+    }
+
+    button { cursor: pointer; }
+
+    .danger { background: red; color: white; }
+    .good { background: green; color: white; }
+    .warn { background: orange; }
+  </style>
+</head>
+
+<body>
+
+<h2>🎮 Game Master Panel</h2>
+
+<div id="players"></div>
+<hr>
+
+<h3>🗑 Remove Player</h3>
+<select id="removePlayer"></select>
+<button class="danger" onclick="removePlayer()">REMOVE PLAYER</button>
+
+<hr>
+
+<h3>🟢 Game Control</h3>
+<button class="good" onclick="startGame()">START GAME</button>
+<button class="danger" onclick="resetGame()">RESET GAME</button>
+
+<hr>
+
+<h3>🔁 Turn System</h3>
+<h3>📌 Current Turn: <span id="liveTurn"></span></h3>
+<button onclick="nextTurn()">NEXT TURN</button>
+
+<hr>
+
+<h3>⛔ Skip Next Turn</h3>
+<select id="skipPlayer"></select>
+<button onclick="skipTurn()">Skip 1 Round</button>
+
+<hr>
+
+<h3>🎯 Turn Order Setup</h3>
+<div id="orderList"></div>
+<button onclick="saveTurnOrder()">SAVE TURN ORDER</button>
+
+<hr>
+
+<h3>💰 Edit Money</h3>
+<select id="moneyPlayer"></select>
+<input id="moneyAmount" placeholder="Amount">
+<button onclick="addMoney()">+ ADD</button>
+<button class="danger" onclick="removeMoney()">- REMOVE</button>
+
+<hr>
+
+<h3>⚡ Penalty System</h3>
+<select id="penaltyPlayer"></select>
+<button class="danger" onclick="penalty()">GIVE PENALTY (-500)</button>
+
+<script>
+
+let turnIndex = 0;
+let lastTurnOrder = [];
+
+/* ---------------- DATA ---------------- */
+function getPlayers() {
+  return JSON.parse(localStorage.getItem("players") || "{}");
+}
+
+function savePlayers(p) {
+  localStorage.setItem("players", JSON.stringify(p));
+}
+
+/* ---------------- RENDER ---------------- */
+function render() {
+  syncTurnOrderWithPlayers(); // 🔥 KEEP ALWAYS UPDATED
+
+  let players = getPlayers();
+
+  let html = "<h3>📜 Players</h3>";
+
+  for (let char in players) {
+    html += `
+      <div class="card">
+        <b>${char.toUpperCase()}</b><br>
+        Name: ${players[char].name}<br>
+        Gold: ${players[char].gold || 0}
+      </div>
+    `;
+  }
+
+  document.getElementById("players").innerHTML = html;
+
+  updateSelect();
+
+  renderTurnUI();
+
+  if (
+      JSON.stringify(getTurnOrder()) !==
+      JSON.stringify(lastTurnOrder)
+  ){
+      renderTurnOrder();
+      lastTurnOrder = [...getTurnOrder()];
+  }
+}
+
+/* ---------------- SELECT ---------------- */
+function updateSelect() {
+  let players = getPlayers();
+
+  function fill(id) {
+    let sel = document.getElementById(id);
+    if (!sel) return;
+
+    let prev = sel.value;
+    sel.innerHTML = "";
+
+    Object.keys(players).forEach(char => {
+      let opt = document.createElement("option");
+      opt.value = char;
+      opt.textContent = char + " (" + players[char].name + ")";
+      sel.appendChild(opt);
+    });
+
+    sel.value = prev;
+  }
+
+  fill("moneyPlayer");
+  fill("penaltyPlayer");
+  fill("skipPlayer");
+  fill("removePlayer");
+}
+
+/* ---------------- GAME ---------------- */
+function startGame() {
+  localStorage.setItem("gameStarted", "true");
+
+  
+  syncTurnOrderWithPlayers();
+  syncTurnToGameStart();
+
+  alert("Game Started!");
+  render();
+}
+
+function resetGame() {
+  localStorage.clear();
+  alert("Game Reset!");
+  render();
+}
+
+/* ---------------- TURN SYSTEM ---------------- */
+function getTurnOrder() {
+  return JSON.parse(localStorage.getItem("turnOrder") || "[]");
+}
+
+function saveTurnOrder(order) {
+    localStorage.setItem("turnOrder", JSON.stringify(order));
+    renderTurnOrder();
+}
+
+function initTurnOrder() {
+  let players = Object.keys(getPlayers());
+  saveTurnOrder(players);
+
+  renderTurnOrder();
+}
+
+function syncTurnToGameStart() {
+  let order = getTurnOrder();
+  if (order.length > 0 && !localStorage.getItem("currentTurn")) {
+    localStorage.setItem("currentTurn", order[0]);
+  }
+}
+
+function nextTurn() {
+  let order = getTurnOrder();
+  if (order.length === 0) return;
+
+  let current = localStorage.getItem("currentTurn");
+  let index = order.indexOf(current);
+
+  if (index === -1) index = 0;
+
+  let skipList = getSkipList();
+
+  if (skipList[current] > 0) {
+    skipList[current]--;
+    saveSkipList(skipList);
+    alert(current + " skipped turn!");
+  } else {
+    index = (index + 1) % order.length;
+  }
+
+  localStorage.setItem("currentTurn", order[index]);
+
+  renderTurnUI();
+}
+
+/* ---------------- TURN ORDER ---------------- */
+function renderTurnOrder() {
+  let order = getTurnOrder();
+
+  let html = "";
+
+  order.forEach((p, i) => {
+    html += `
+      <div class="card">
+        ${i + 1}. ${p}
+        <button onclick="moveUp(${i})">⬆</button>
+        <button onclick="moveDown(${i})">⬇</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("orderList").innerHTML = html;
+}
+
+function moveUp(i) {
+  let order = getTurnOrder();
+  if (i === 0) return;
+
+  [order[i-1], order[i]] = [order[i], order[i-1]];
+  saveTurnOrder(order);
+
+  renderTurnOrder();
+}
+
+function moveDown(i) {
+  let order = getTurnOrder();
+  if (i === order.length - 1) return;
+
+  [order[i+1], order[i]] = [order[i], order[i+1]];
+  saveTurnOrder(order);
+
+  renderTurnOrder();
+}
+
+/* ---------------- MONEY ---------------- */
+function addMoney() {
+  let p = document.getElementById("moneyPlayer").value;
+  let amt = parseInt(document.getElementById("moneyAmount").value);
+
+  let players = getPlayers();
+  if (!players[p]) return;
+
+  players[p].gold = (players[p].gold || 0) + amt;
+
+  savePlayers(players);
+  render();
+}
+
+function removeMoney() {
+  let p = document.getElementById("moneyPlayer").value;
+  let amt = parseInt(document.getElementById("moneyAmount").value);
+
+  let players = getPlayers();
+  if (!players[p]) return;
+
+  players[p].gold -= amt;
+
+  savePlayers(players);
+  render();
+}
+
+/* ---------------- PENALTY ---------------- */
+function penalty() {
+  let p = document.getElementById("penaltyPlayer").value;
+
+  let players = getPlayers();
+  players[p].gold -= 500;
+
+  savePlayers(players);
+
+  alert(p + " got penalty -500");
+  render();
+}
+
+/* ---------------- SKIP ---------------- */
+function getSkipList() {
+  return JSON.parse(localStorage.getItem("skipList") || "{}");
+}
+
+function saveSkipList(data) {
+  localStorage.setItem("skipList", JSON.stringify(data));
+}
+
+function skipTurn() {
+  let p = document.getElementById("skipPlayer").value;
+
+  let skipList = getSkipList();
+  skipList[p] = 1;
+
+  saveSkipList(skipList);
+
+  alert(p + " will skip next turn");
+}
+
+/* ---------------- REMOVE PLAYER ---------------- */
+function removePlayer() {
+  let players = getPlayers();
+  let p = document.getElementById("removePlayer").value;
+
+  delete players[p];
+  savePlayers(players);
+
+  syncTurnOrderWithPlayers();
+
+  alert(p + " removed!");
+  render();
+}
+
+/* ---------------- TURN UI ---------------- */
+function renderTurnUI() {
+  let current = localStorage.getItem("currentTurn") || "Not started";
+  document.getElementById("liveTurn").innerText = current;
+}
+
+function syncTurnOrderWithPlayers() {
+  let players = Object.keys(getPlayers());
+  let order = getTurnOrder();
+
+  // 只保留存在的玩家
+  order = order.filter(p => players.includes(p));
+
+  // 加入新玩家
+  players.forEach(p => {
+    if (!order.includes(p)) {
+      order.push(p);
+    }
+  });
+
+  saveTurnOrder(order);
+}
+
+/* ---------------- INIT ---------------- */
+render();
+
+if (!localStorage.getItem("turnOrder")) {
+    initTurnOrder();
+}
+
+syncTurnToGameStart();
+
+setInterval(() => {
+    syncTurnOrderWithPlayers();
+    render();
+},500);
+
+</script>
+
+</body>
+</html>

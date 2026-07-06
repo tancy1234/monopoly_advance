@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Game Control</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background:#111; color:white; }
+    .card { background:#222; padding:10px; margin:10px 0; border-radius:8px; }
+    button { padding:10px; margin-top:10px; }
+    select, input { padding:5px; margin:5px; }
+  </style>
+</head>
+
+<body>
+
+<h2>🎮 Monopoly Control Panel</h2>
+
+<div id="players"></div>
+
+<hr>
+<br> 
+<h3 id="me"></h3>
+<br>
+<hr>
+
+<h3>💸 Transfer Money</h3>
+
+<select id="from"></select>
+<select id="to"></select>
+
+<input id="amount" placeholder="Amount">
+
+<button onclick="transfer()">Transfer</button>
+
+<script>
+function getPlayers() {
+  return JSON.parse(localStorage.getItem("players") || "{}");
+}
+
+function renderPlayers() {
+  let players = JSON.parse(localStorage.getItem("players") || "{}");
+
+  let html = "";
+
+  Object.keys(players).forEach(char => {
+    html += `
+      <div>
+        ${char.toUpperCase()} → ${players[char]?.name || "No Name"} 💰 ${players[char]?.gold || 0}
+      </div>
+    `;
+  });
+
+  document.getElementById("players").innerHTML = html;
+}
+
+function renderSelect() {
+  let players = getPlayers();
+
+  let from = document.getElementById("from");
+  let to = document.getElementById("to");
+
+  from.innerHTML = "";
+  to.innerHTML = "";
+
+  for (let char in players) {
+    from.innerHTML += `<option value="${char}">${char}</option>`;
+    to.innerHTML += `<option value="${char}">${char}</option>`;
+  }
+}
+
+function transfer() {
+  let players = getPlayers();
+
+  let fromChar = document.getElementById("from").value;
+  let toChar = document.getElementById("to").value;
+  let amount = parseInt(document.getElementById("amount").value);
+  let started = localStorage.getItem("gameStarted");
+
+  if (!started) {
+    document.body.innerHTML = "<h2>Waiting for Admin to Start Game...</h2>";
+    return;
+  }
+  if (!amount || amount <= 0) {
+    alert("Invalid amount");
+    return;
+  }
+
+  let fromName = players[fromChar]?.name || "No Name";
+  let toName = players[toChar]?.name || "No Name";
+
+  alert(
+    `${fromChar} (${fromName}) → ${toChar} (${toName})\nAmount: ${amount}`
+  );
+
+  console.log("Transfer:", fromChar, "to", toChar, amount);
+  /* ---------------- REAL MONEY TRANSFER ---------------- */
+
+  if (!players[fromChar] || !players[toChar]) {
+    alert("Invalid player");
+    return;
+  }
+
+  if (players[fromChar].gold === undefined) players[fromChar].gold = 1000;
+  if (players[toChar].gold === undefined) players[toChar].gold = 1000;
+
+  players[fromChar].gold -= amount;
+  players[toChar].gold += amount;
+
+  savePlayers(players);
+}
+
+function savePlayers(p) {
+  localStorage.setItem("players", JSON.stringify(p));
+}
+function showMe() {
+  let me = localStorage.getItem("myCharacter");
+  document.getElementById("me").innerText = "You character are: " + me;
+}
+
+setInterval(showMe, 1000);
+setInterval(() => {
+  renderPlayers();
+  renderSelect();
+}, 1000);
+</script>
+
+</body>
+</html>

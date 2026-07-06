@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bind Player</title>
+</head>
+<body>
+
+<script>
+function startBind() {
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const character = urlParams.get("character");
+
+  if (!character) {
+    alert("No character found");
+    return;
+  }
+
+  let players = JSON.parse(localStorage.getItem("players") || "{}");
+
+  if (players[character]) {
+    alert(character + " already taken by " + players[character].name);
+    window.location.href = "game.html";
+    return;
+  }
+
+  let name = prompt("Enter your name for: " + character.toUpperCase());
+
+  if (!name) {
+    alert("Name required");
+    location.reload();
+    return;
+  }
+
+  players[character] = {
+    name: name,
+    gold: 1000
+  };
+
+  localStorage.setItem("players", JSON.stringify(players));
+  localStorage.setItem("myCharacter", character);
+
+  alert(character + " is now " + name);
+
+  window.location.href = "game.html";
+}
+
+startBind();
+</script>
+
+</body>
+</html>
