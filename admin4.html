@@ -151,6 +151,7 @@ listenSkipList((data) => {
   skipList = data;
 });
 
+
 /* =========================
    STORAGE CORE
 ========================= */
@@ -169,14 +170,14 @@ function resetGame() {
 
 
 function renderPlayers() {
-  let html = "<h3>📜 Players</h3>";
+  let html = "<h3>📜 玩家</h3>";
 
   for (let char in players) {
     html += `
       <div class="card">
         <b>${char.toUpperCase()}</b><br>
-        Name: ${players[char].name}<br>
-        Gold: ${players[char].gold || 0}
+        名字: ${players[char].name}<br>
+        金币: ${players[char].gold || 0}
       </div>
     `;
   }

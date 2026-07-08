@@ -330,11 +330,18 @@ function showMe() {
 
   let me = localStorage.getItem("myCharacter");
 
+  let characterName = {
+    zeus: "宙斯",
+    jesus: "耶稣",
+    // 这里继续加你的角色
+    // athena: "雅典娜",
+    // hades: "哈迪斯"
+  };
+
+  let displayName = characterName[me] || me;
+
   document.getElementById("me").innerText =
-  "你的角色是: " + me;
-
-
-  showAbility();
+    "你的角色是: " + me.toUpperCase() + " (" + displayName + ")";
 
 }
 setInterval(showMe,1000);
