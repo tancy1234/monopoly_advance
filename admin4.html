@@ -62,7 +62,7 @@
 
 <body>
 
-<h2>🎮 Monopoly Game Master Panel v2</h2>
+<h2>🎮 基督征战 </h2>
 
 <!-- PLAYERS -->
 <div id="players"></div>
@@ -70,55 +70,55 @@
 <hr>
 
 <!-- REMOVE PLAYER -->
-<h3>🗑 Remove Player</h3>
+<h3>🗑 移除玩家</h3>
 <select id="removePlayer"></select>
-<button class="danger" onclick="removePlayer()">REMOVE PLAYER</button>
+<button class="danger" onclick="removePlayer()">移除玩家</button>
 
 <hr>
 
 <!-- GAME CONTROL -->
-<h3>🟢 Game Control</h3>
-<button class="good" onclick="startGame()">START GAME</button>
-<button class="danger" onclick="resetGame()">RESET GAME</button>
+<h3>🟢 游戏控制l</h3>
+<button class="good" onclick="startGame()">开始</button>
+<button class="danger" onclick="resetGame()">重置</button>
 
 <hr>
 
 <!-- TURN SYSTEM -->
-<h3>🔁 Turn System</h3>
-<h3>📌 Current Turn: <span id="liveTurn">-</span></h3>
-<button onclick="nextTurn()">NEXT TURN</button>
+<h3>🔁 回合系统</h3>
+<h3>📌 轮到: <span id="liveTurn">-</span></h3>
+<button onclick="nextTurn()">下一位</button>
 
 <hr>
 
 <!-- SKIP -->
-<h3>⛔ Skip Next Turn</h3>
+<h3>⛔ 跳过玩家</h3>
 <select id="skipPlayer"></select>
-<button onclick="skipTurn()">Skip 1 Round</button>
+<button onclick="skipTurn()">跳过一回合</button>
 
 <hr>
 
 <!-- TURN ORDER -->
-<h3>🎯 Turn Order Setup</h3>
+<h3>🎯 玩家回合顺序</h3>
 <div id="orderList"></div>
-<button onclick="lockAndSave()">SAVE TURN ORDER</button>
+<button onclick="lockAndSave()">保存</button>
 
 <hr>
 
 <!-- MONEY -->
-<h3>💰 Edit Money</h3>
+<h3>💰 金币更改</h3>
 
 <select id="moneyPlayer"></select>
 <input id="moneyAmount" placeholder="Amount">
 
-<button class="good" onclick="addMoney()">+ ADD</button>
-<button class="danger" onclick="removeMoney()">- REMOVE</button>
+<button class="good" onclick="addMoney()">+ 加</button>
+<button class="danger" onclick="removeMoney()">- 减</button>
 
 <hr>
 
 <!-- PENALTY -->
-<h3>⚡ Penalty System</h3>
+<h3>⚡ 惩罚系统</h3>
 <select id="penaltyPlayer"></select>
-<button class="danger" onclick="penalty()">GIVE PENALTY (-500)</button>
+<button class="danger" onclick="penalty()">惩罚 (-500)</button>
 
 <hr>
 

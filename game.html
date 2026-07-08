@@ -19,7 +19,7 @@
 
 <body>
 
-<h2>🎮 Monopoly Control Panel</h2>
+<h2>🎮 玩家终端</h2>
 
 <div id="players"></div>
 
@@ -31,15 +31,15 @@
 <br>
 <hr>
 
-<h3>💸 Transfer Money</h3>
+<h3>💸 转钱咯</h3>
 
 
 <select id="to"></select>
 
 <input id="amount" placeholder="Amount">
 
-<button onclick="transfer()">Transfer</button>
-<button onclick="pay()">PAY</button>
+<button onclick="transfer()">转给玩家</button>
+<button onclick="pay()">转给银行</button>
 <script>
 
 let players = {};
@@ -154,12 +154,12 @@ function showTurnMessage(myTurn){
 
     if(myTurn){
 
-        box.innerHTML="🟢 YOUR TURN!";
+        box.innerHTML="🟢 快点! 到你了！！！";
 
     }else{
 
         box.innerHTML=
-        "⏳ Waiting... Current Turn: "
+        "⏳ 等一下 现在是 "
         + currentTurn;
 
     }
@@ -263,7 +263,7 @@ function transfer() {
   // 检查自己的钱
   if(players[fromChar].gold < amount){
 
-      alert("Not enough money");
+      alert("不够钱咯");
       return;
 
   }
@@ -285,7 +285,7 @@ function transfer() {
 
   alert(
     fromChar.toUpperCase()
-    + " paid "
+    + " 给 "
     + toChar.toUpperCase()
     + " 💰 "
     + amount
@@ -318,7 +318,7 @@ function showAbility(){
     document.getElementById("ability").innerHTML =
     `
     <hr>
-    <h3>✨ Your Ability</h3>
+    <h3>✨ 你的技能</h3>
 
     <div class="card">
     ${ability}
@@ -331,7 +331,7 @@ function showMe() {
   let me = localStorage.getItem("myCharacter");
 
   document.getElementById("me").innerText =
-  "Your character are: " + me;
+  "你的角色是: " + me;
 
 
   showAbility();
