@@ -11,4 +11,4 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const db = firebase.database(); // ⭐必须先
+const db = firebase.database();

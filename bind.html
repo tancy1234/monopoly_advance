@@ -1,52 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="firebase.js"></script>
   <meta charset="UTF-8">
   <title>Bind Player</title>
 </head>
 <body>
 
 <script>
+
+console.log("Firebase apps:", firebase.apps.length);
+console.log("Database:", db);
+
+alert("BIND JS RUNNING");
 function startBind() {
 
   const urlParams = new URLSearchParams(window.location.search);
   const character = urlParams.get("character");
+
+  console.log("Character:", character);
+
 
   if (!character) {
     alert("No character found");
     return;
   }
 
-  let players = JSON.parse(localStorage.getItem("players") || "{}");
 
-  if (players[character]) {
-    alert(character + " already taken by " + players[character].name);
-    window.location.href = "game.html";
-    return;
-  }
+  db.ref("players/" + character).once("value")
+  .then((snap)=>{
 
-  let name = prompt("Enter your name for: " + character.toUpperCase());
+    console.log("Check existing:", snap.val());
 
-  if (!name) {
-    alert("Name required");
-    location.reload();
-    return;
-  }
 
-  players[character] = {
-    name: name,
-    gold: 1000
-  };
+    if (snap.exists()) {
 
-  localStorage.setItem("players", JSON.stringify(players));
-  localStorage.setItem("myCharacter", character);
+        console.log("Already exists");
 
-  alert(character + " is now " + name);
+        alert(character + " already taken");
 
-  window.location.href = "game.html";
+        window.location.href="game.html";
+
+        return;
+    }
+
+
+    let name = prompt("Enter your name for: " + character.toUpperCase());
+
+
+    console.log("Input name:", name);
+
+
+    if (!name) {
+      alert("Name required");
+      return;
+    }
+
+
+    console.log("Writing Firebase...");
+
+
+    db.ref("players/" + character).set({
+
+        name:name,
+        gold:1000
+
+    })
+    .then(()=>{
+
+        console.log("WRITE SUCCESS");
+
+
+        localStorage.setItem("myCharacter", character);
+
+        window.location.href="game.html";
+
+    })
+    .catch((error)=>{
+
+        console.error("WRITE ERROR:",error);
+
+    });
+
+
+  });
+
 }
 
+
 startBind();
+
 </script>
 
 </body>

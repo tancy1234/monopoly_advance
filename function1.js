@@ -6,11 +6,7 @@ const db = firebase.database();
 /* =========================
    PLAYERS
 ========================= */
-function listenPlayers(callback) {
-  db.ref("players").on("value", (snap) => {
-    callback(snap.val() || {});
-  });
-}
+
 
 function savePlayers(players) {
   db.ref("players").set(players);
@@ -19,11 +15,7 @@ function savePlayers(players) {
 /* =========================
    TURN ORDER
 ========================= */
-function listenTurnOrder(callback) {
-  db.ref("turnOrder").on("value", (snap) => {
-    callback(snap.val() || []);
-  });
-}
+
 
 function saveTurnOrder(order) {
   db.ref("turnOrder").set(order);
@@ -32,11 +24,7 @@ function saveTurnOrder(order) {
 /* =========================
    CURRENT TURN
 ========================= */
-function listenCurrentTurn(callback) {
-  db.ref("currentTurn").on("value", (snap) => {
-    callback(snap.val() || null);
-  });
-}
+
 
 function setCurrentTurn(p) {
   db.ref("currentTurn").set(p);
@@ -45,11 +33,7 @@ function setCurrentTurn(p) {
 /* =========================
    SKIP SYSTEM
 ========================= */
-function listenSkipList(callback) {
-  db.ref("skipList").on("value", (snap) => {
-    callback(snap.val() || {});
-  });
-}
+
 
 function saveSkipList(data) {
   db.ref("skipList").set(data);
