@@ -323,7 +323,52 @@ function renderAll() {
    SAFE STORAGE CORE (FIXED)
 ========================= */
 
+function removePlayer() {
 
+  let p = document.getElementById("removePlayer").value;
+
+  if (!p) {
+    alert("No player selected");
+    return;
+  }
+
+
+  // 删除 Firebase 玩家资料
+  db.ref("players/" + p).remove()
+  .then(()=>{
+
+    console.log(p + " removed from players");
+
+
+    // 同时从 turnOrder 删除
+    db.ref("turnOrder").once("value")
+    .then((snap)=>{
+
+      let order = snap.val() || [];
+
+      order = order.filter(x => x !== p);
+
+
+      db.ref("turnOrder").set(order);
+
+
+    });
+
+
+    // 删除 skip 状态
+    db.ref("skipList/" + p).remove();
+
+
+    alert(p + " removed");
+
+
+  })
+  .catch((error)=>{
+
+    console.error("Remove error:", error);
+  });
+
+}
 
 
 
