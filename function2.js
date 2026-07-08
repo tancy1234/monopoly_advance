@@ -16,8 +16,21 @@ function listenTurnOrder(callback) {
     });
 }
 
-function listenCurrentTurn(callback) {
-    db.ref("currentTurn").on("value", (snap) => {
-        callback(snap.val() || null);
-    });
+function listenCurrentTurn(callback){
+
+  db.ref("currentTurn").on("value",(snap)=>{
+
+    callback(
+      snap.val() || ""
+    );
+  });
+}
+function listenSkipList(callback){
+
+  db.ref("skipList").on("value",(snap)=>{
+
+    callback(
+      snap.val() || {}
+    );
+  });
 }
