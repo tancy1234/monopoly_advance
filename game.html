@@ -27,6 +27,8 @@
 <br> 
 <h3 id="me"></h3>
 <br>
+<div id="ability"></div>
+<br>
 <hr>
 
 <h3>💸 Transfer Money</h3>
@@ -292,22 +294,47 @@ function transfer() {
 
 }
 
+function showAbility(){
 
-function showMe(){
+    let me = localStorage.getItem("myCharacter");
+    let abilities = {
 
- let me=getMyCharacter();
+        zeus: "⚡ Lightning: Once per game, double your money reward",
 
- let player=players[me];
+        jesus: "✝ Heal: Ignore one penalty",
+
+        thor: "🔨 Hammer: Destroy one obstacle",
+
+        athena: "🦉 Wisdom: See hidden information"
+
+    };
+
+    let ability = abilities[me];
+
+    if(!ability){
+        ability = "No ability";
+    }
+
+    document.getElementById("ability").innerHTML =
+    `
+    <hr>
+    <h3>✨ Your Ability</h3>
+
+    <div class="card">
+    ${ability}
+    </div>
+    `;
+}
+
+function showMe() {
+
+  let me = localStorage.getItem("myCharacter");
+
+  document.getElementById("me").innerText =
+  "Your character are: " + me;
 
 
- document.getElementById("me").innerHTML =
- `
- You are:
- <b>${me}</b><br>
- Name: ${player?.name || ""}
- <br>
- Money: 💰${player?.gold || 0}
- `;
+  showAbility();
 
 }
 setInterval(showMe,1000);
