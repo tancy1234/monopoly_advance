@@ -39,8 +39,115 @@
 <button onclick="transfer()">Transfer</button>
 
 <script>
-let players = {};
 
+let players = {};
+let currentTurn = "";
+
+
+// 读取自己是谁
+function getMyCharacter(){
+
+    return localStorage.getItem("myCharacter");
+
+}
+
+
+// 监听玩家资料
+db.ref("players").on("value",(snap)=>{
+
+    players = snap.val() || {};
+
+    renderPlayers();
+    renderSelect();
+
+});
+
+
+
+// 监听回合
+db.ref("currentTurn").on("value",(snap)=>{
+
+    currentTurn = snap.val();
+
+    checkMyTurn();
+
+});
+
+
+
+
+// 检查是不是自己
+function checkMyTurn(){
+
+    let me = getMyCharacter();
+
+
+    if(!me){
+        return;
+    }
+
+
+    if(currentTurn === me){
+
+        // 自己的回合
+        document.body.style.background = "#90ee90";
+        document.body.style.color = "black";
+
+
+        showTurnMessage(true);
+
+
+    }else{
+
+
+        // 别人的回合
+        document.body.style.background = "#111";
+        document.body.style.color = "white";
+
+
+        showTurnMessage(false);
+
+    }
+
+}
+
+
+
+
+function showTurnMessage(myTurn){
+
+    let old = document.getElementById("turnAlert");
+
+
+    if(!old){
+
+        let div=document.createElement("h2");
+        div.id="turnAlert";
+
+        document.body.insertBefore(
+            div,
+            document.body.firstChild
+        );
+
+    }
+
+
+    let box=document.getElementById("turnAlert");
+
+
+    if(myTurn){
+
+        box.innerHTML="🟢 YOUR TURN!";
+
+    }else{
+
+        box.innerHTML=
+        "⏳ Waiting... Current Turn: "
+        + currentTurn;
+
+    }
+
+}
 
 listenPlayers((data)=>{
 
