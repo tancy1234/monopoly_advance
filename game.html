@@ -37,7 +37,7 @@
 <input id="amount" placeholder="Amount">
 
 <button onclick="transfer()">Transfer</button>
-
+<button onclick="pay()">PAY</button>
 <script>
 
 let players = {};
@@ -66,6 +66,40 @@ db.ref("currentTurn").on("value",(snap)=>{
     checkMyTurn();
 
 });
+
+function pay(){
+
+    let me = getMyCharacter();
+
+    let amount =
+    parseInt(document.getElementById("amount").value);
+
+
+    if(!amount || amount<=0){
+        alert("Invalid amount");
+        return;
+    }
+
+
+    if(players[me].gold < amount){
+
+        alert("Not enough money");
+        return;
+
+    }
+
+
+    players[me].gold -= amount;
+
+
+    db.ref("players").set(players);
+
+
+    alert(
+      "Paid 💰 " + amount
+    );
+
+}
 // 检查是不是自己
 function checkMyTurn(){
 
