@@ -31,7 +31,7 @@
 
 <h3>💸 Transfer Money</h3>
 
-<select id="from"></select>
+
 <select id="to"></select>
 
 <input id="amount" placeholder="Amount">
@@ -43,15 +43,12 @@
 let players = {};
 let currentTurn = "";
 
-
 // 读取自己是谁
 function getMyCharacter(){
 
     return localStorage.getItem("myCharacter");
 
 }
-
-
 // 监听玩家资料
 db.ref("players").on("value",(snap)=>{
 
@@ -61,9 +58,6 @@ db.ref("players").on("value",(snap)=>{
     renderSelect();
 
 });
-
-
-
 // 监听回合
 db.ref("currentTurn").on("value",(snap)=>{
 
@@ -72,10 +66,6 @@ db.ref("currentTurn").on("value",(snap)=>{
     checkMyTurn();
 
 });
-
-
-
-
 // 检查是不是自己
 function checkMyTurn(){
 
@@ -85,8 +75,6 @@ function checkMyTurn(){
     if(!me){
         return;
     }
-
-
     if(currentTurn === me){
 
         // 自己的回合
@@ -98,9 +86,7 @@ function checkMyTurn(){
 
 
     }else{
-
-
-        // 别人的回合
+     // 别人的回合
         document.body.style.background = "#111";
         document.body.style.color = "white";
 
@@ -110,9 +96,6 @@ function checkMyTurn(){
     }
 
 }
-
-
-
 
 function showTurnMessage(myTurn){
 
@@ -130,8 +113,6 @@ function showTurnMessage(myTurn){
         );
 
     }
-
-
     let box=document.getElementById("turnAlert");
 
 
@@ -179,22 +160,26 @@ function renderPlayers() {
 
 function renderSelect() {
 
-  let from=document.getElementById("from");
   let to=document.getElementById("to");
 
-  from.innerHTML="";
   to.innerHTML="";
+
+
+  let me = getMyCharacter();
+
 
   Object.keys(players).forEach(char=>{
 
-      from.innerHTML+=`
-      <option value="${char}">
-      ${char}
-      </option>`;
+
+      // 不显示自己
+      if(char === me){
+          return;
+      }
+
 
       to.innerHTML+=`
       <option value="${char}">
-      ${char}
+      ${char} (${players[char].name})
       </option>`;
 
   });
@@ -202,53 +187,96 @@ function renderSelect() {
 }
 
 function transfer() {
-  
 
-  let fromChar = document.getElementById("from").value;
+
+  let fromChar = getMyCharacter();
+
   let toChar = document.getElementById("to").value;
-  let amount = parseInt(document.getElementById("amount").value);
-  let started = localStorage.getItem("gameStarted");
 
-  if (!started) {
-    document.body.innerHTML = "<h2>Waiting for Admin to Start Game...</h2>";
-    return;
-  }
-  if (!amount || amount <= 0) {
-    alert("Invalid amount");
-    return;
-  }
-
-  let fromName = players[fromChar]?.name || "No Name";
-  let toName = players[toChar]?.name || "No Name";
-
-  alert(
-    `${fromChar} (${fromName}) → ${toChar} (${toName})\nAmount: ${amount}`
+  let amount = parseInt(
+      document.getElementById("amount").value
   );
 
-  console.log("Transfer:", fromChar, "to", toChar, amount);
-  /* ---------------- REAL MONEY TRANSFER ---------------- */
 
-  if (!players[fromChar] || !players[toChar]) {
-    alert("Invalid player");
-    return;
+  if(!fromChar){
+
+      alert("No character");
+      return;
+
   }
 
-  if (players[fromChar].gold === undefined) players[fromChar].gold = 1000;
-  if (players[toChar].gold === undefined) players[toChar].gold = 1000;
 
+  if(!amount || amount <= 0){
+
+      alert("Invalid amount");
+      return;
+
+  }
+
+
+
+  if(!players[fromChar] || !players[toChar]){
+
+      alert("Invalid player");
+      return;
+
+  }
+
+
+
+  // 检查自己的钱
+  if(players[fromChar].gold < amount){
+
+      alert("Not enough money");
+      return;
+
+  }
+
+
+
+  // 扣自己
   players[fromChar].gold -= amount;
+
+
+  // 给别人
   players[toChar].gold += amount;
 
+
+
   db.ref("players").set(players);
+
+
+
+  alert(
+    fromChar.toUpperCase()
+    + " paid "
+    + toChar.toUpperCase()
+    + " 💰 "
+    + amount
+  );
+
+
 }
 
 
-function showMe() {
-  let me = localStorage.getItem("myCharacter");
-  document.getElementById("me").innerText = "You character are: " + me;
-}
+function showMe(){
 
-setInterval(showMe, 1000);
+ let me=getMyCharacter();
+
+ let player=players[me];
+
+
+ document.getElementById("me").innerHTML =
+ `
+ You are:
+ <b>${me}</b><br>
+ Name: ${player?.name || ""}
+ <br>
+ Money: 💰${player?.gold || 0}
+ `;
+
+}
+setInterval(showMe,1000);
 
 </script>
 
