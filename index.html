@@ -1,46 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="firebase.js"></script>
+
   <meta charset="UTF-8">
   <title>Monopoly Game</title>
+
 </head>
 
 <body>
+
 <h2>Loading Game...</h2>
 
+
 <script>
-// 读取 URL 参数
+
 const urlParams = new URLSearchParams(window.location.search);
 const character = urlParams.get("character");
+
+
+console.log("Character:", character);
+console.log("Database:", db);
+
 
 // NFC 进来
 if (character) {
 
-    db.ref("players/" + character).once("value").then((snap) => {
+
+    db.ref("players/" + character).once("value")
+    .then((snap)=>{
+
+
+        console.log("Firebase result:", snap.val());
+
 
         if (snap.exists()) {
-            // 已经有人绑定
+
             localStorage.setItem("myCharacter", character);
-            window.location.href = "game.html";
+
+            window.location.href="game.html";
+
+
         } else {
-            // 没人绑定
-            window.location.href = "bind.html?character=" + character;
+
+
+            window.location.href="bind.html?character=" + character;
+
+
         }
+
 
     });
 
+
 }
+
+
 else{
 
-    // 没有 character 参数
+
     if(localStorage.getItem("myCharacter")){
+
         window.location.href="game.html";
-    }else{
-        document.body.innerHTML="<h2>Please scan NFC card.</h2>";
+
     }
 
+    else{
+
+        document.body.innerHTML="<h2>Please scan NFC card.</h2>";
+
+    }
+
+
 }
+
+
 </script>
+
 
 </body>
 </html>
