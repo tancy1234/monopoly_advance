@@ -143,6 +143,7 @@ listenPlayers((data) => {
   players = data;
   renderPlayers(players);
   updateSelect(players);
+  loadAbilityPlayers();
 });
 
 listenTurnOrder((data) => {
@@ -476,24 +477,23 @@ function lockAndSave(){
 
 function loadAbilityPlayers(){
 
-let select=document.getElementById("abilityPlayer");
+  let select=document.getElementById("abilityPlayer");
 
-if(!select){
-return;
-}
+  if(!select){
+    return;
+  }
 
-select.innerHTML="";
+  select.innerHTML="";
 
-Object.keys(players).forEach(char=>{
+  Object.keys(players).forEach(char=>{
 
-let p=players[char];
+    select.innerHTML+=`
+    <option value="${char}">
+    ${char.toUpperCase()} (${players[char].name})
+    </option>
+    `;
 
-select.innerHTML+=`
-<option value="${char}">
-${char.toUpperCase()} (${p.name})
-</option>`;
-
-});
+  });
 
 }
 
