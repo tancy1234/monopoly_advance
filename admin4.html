@@ -478,13 +478,19 @@ function loadAbilityPlayers(){
 
 let select=document.getElementById("abilityPlayer");
 
+if(!select){
+return;
+}
+
 select.innerHTML="";
 
 Object.keys(players).forEach(char=>{
 
+let p=players[char];
+
 select.innerHTML+=`
 <option value="${char}">
-${char.toUpperCase()} (${players[char].name})
+${char.toUpperCase()} (${p.name})
 </option>`;
 
 });

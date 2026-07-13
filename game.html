@@ -514,7 +514,9 @@ function useAbility(){
                 return;
 
             }
-            ability.charge--;
+            if(ability.charge>0){
+                ability.charge--;
+            }
             ability.active=true;
             ability.status="lightning_ready";
             alert(
