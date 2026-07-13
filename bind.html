@@ -65,7 +65,23 @@ function startBind() {
     db.ref("players/" + character).set({
 
         name:name,
-        gold:15000
+        gold:15000,
+
+        ability:{
+
+          ready:true,
+
+          cooldown:0,
+
+          charge:1,
+
+          maxCharge:1,
+
+          active:false,
+
+          status:"normal"
+
+      }
 
     })
     .then(()=>{

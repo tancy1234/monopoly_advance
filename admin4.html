@@ -115,6 +115,14 @@
 
 <hr>
 
+<h3>⚡ Ability Control</h3>
+
+<select id="abilityPlayer"></select>
+
+<button onclick="refreshAbility()">刷新技能</button>
+<button onclick="clearAbility()">清除技能</button>
+<hr>
+
 <!-- PENALTY -->
 <h3>⚡ 惩罚系统</h3>
 <select id="penaltyPlayer"></select>
@@ -465,6 +473,56 @@ function lockAndSave(){
   alert("Turn order locked!");
 
 }
+
+function loadAbilityPlayers(){
+
+let select=document.getElementById("abilityPlayer");
+
+select.innerHTML="";
+
+Object.keys(players).forEach(char=>{
+
+select.innerHTML+=`
+<option value="${char}">
+${char.toUpperCase()} (${players[char].name})
+</option>`;
+
+});
+
+}
+
+function refreshAbility(){
+
+let char=document.getElementById("abilityPlayer").value;
+
+db.ref("players/"+char+"/ability").update({
+
+charge:1,
+active:false,
+status:"normal"
+
+});
+
+alert(char+" 技能刷新");
+
+}
+
+function clearAbility(){
+
+let char=document.getElementById("abilityPlayer").value;
+
+db.ref("players/"+char+"/ability").update({
+
+charge:0,
+active:false,
+status:"normal"
+
+});
+
+alert(char+" 技能清除");
+
+}
+
 /* =========================
    INIT
 ========================= */
