@@ -505,12 +505,26 @@ function refreshAbility(){
 
     if(!p || !p.ability)return;
 
-    let max=p.ability.maxCharge||1;
 
-    let charge=Math.min((p.ability.charge||0)+1,max);
+    let maxCharge=1;
+
+    if(char=="hera"){
+        maxCharge=3;
+    }
+
+
+    let charge=Math.min(
+        (p.ability.charge||0)+1,
+        maxCharge
+    );
+
 
     db.ref("players/"+char+"/ability").update({
-        charge:charge
+
+        charge:charge,
+
+        maxCharge:maxCharge
+
     });
 
 }
