@@ -501,9 +501,8 @@ function refreshAbility(){
 
     let char=document.getElementById("abilityPlayer").value;
 
-    let p=players[char];
 
-    
+    let p=players[char];
 
 
     if(!p || !p.ability){
@@ -537,21 +536,23 @@ function refreshAbility(){
     );
 
 
+
     db.ref("players/"+char+"/ability").update({
 
         charge:charge,
 
         maxCharge:maxCharge
 
-    }).then(()=>{
+    })
+    .then(()=>{
 
         alert(
-            char.toUpperCase()
-            +" 技能点增加\n"
-            +"现在: "
-            +charge
-            +"/"
-            +maxCharge
+        char.toUpperCase()
+        +" 技能点增加\n"
+        +"现在:"
+        +charge
+        +"/"
+        +maxCharge
         );
 
     });
