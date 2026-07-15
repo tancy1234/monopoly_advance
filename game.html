@@ -483,12 +483,7 @@ function useAbility(){
 
     let ability = players[me].ability;
 
-    let startGold = 15000;
     
-    if(character=="esther"){
-        startGold = 25000;
-    }
-
 
     if(me=="hera"){
 
@@ -609,13 +604,7 @@ function useAbility(){
         break;
 
         case "abraham":
-            if(ability.charge <= 0){
-
-                alert("没有羔羊可以献祭");
-
-                return;
-
-            }
+        
 
             ability.charge--;
 
