@@ -506,32 +506,27 @@ function refreshAbility(){
 
 
     if(!p || !p.ability){
+
         alert("No ability");
+
         return;
+
     }
 
 
-    let maxCharge;
+    let maxCharge = 1;
 
 
-    if(char=="abraham"){
+    if(char=="hera" || char=="abraham"){
 
-        maxCharge=3;
-
-    }else if(char=="hera"){
-
-        maxCharge=3;
-
-    }else{
-
-        maxCharge=1;
+        maxCharge = 3;
 
     }
 
 
 
     let charge=Math.min(
-        (p.ability.charge||0)+1,
+        (p.ability.charge || 0) + 1,
         maxCharge
     );
 
@@ -547,18 +542,17 @@ function refreshAbility(){
     .then(()=>{
 
         alert(
-        char.toUpperCase()
-        +" 技能点增加\n"
-        +"现在:"
-        +charge
-        +"/"
-        +maxCharge
+            char.toUpperCase()
+            +" 技能点增加\n"
+            +"现在: "
+            +charge
+            +"/"
+            +maxCharge
         );
 
     });
 
 }
-
 function clearAbility(){
 
 let char=document.getElementById("abilityPlayer").value;
