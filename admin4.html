@@ -527,11 +527,16 @@ function refreshAbility(){
 
     }).then(()=>{
 
-      console.log("Firebase OK");
+        alert(
+            char.toUpperCase()
+            +" 技能点增加\n"
+            +"现在: "
+            +charge
+            +"/"
+            +maxCharge
+        );
 
-      alert("OK");
-
-  });
+    });
 
 }
 
