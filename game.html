@@ -444,29 +444,42 @@ function showAbility(){
         ${skill.description}
         </p>
         <hr>
-        🔋 Charge:
+        ${abilityData.maxCharge ?
 
+        `
+        <hr>
+        🔋 Charge:
         ${abilityData.charge}
         /
         ${abilityData.maxCharge}
         <br><br>
+
         ${status}
+
         <br><br>
+
         <button
 
         onclick="useAbility()"
 
         ${
-            abilityData.charge<=0 ||
-            abilityData.cooldown>0
-            ?
-            "disabled"
-            :
-            ""
+        abilityData.charge<=0 ||
+        abilityData.cooldown>0
+        ?
+        "disabled"
+        :
+        ""
         }
+
         >
         ⚡ 使用技能
         </button>
+        `
+
+        :
+
+        ""
+        }
     </div>
     `;
 }
