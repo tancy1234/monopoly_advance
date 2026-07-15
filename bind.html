@@ -61,6 +61,27 @@ function startBind() {
 
     console.log("Writing Firebase...");
 
+    let characterAbility = {
+
+        zeus:{
+            maxCharge:1,
+            startCharge:1
+        },
+
+        hera:{
+            maxCharge:3,
+            startCharge:0
+        }
+
+    };
+
+
+    let abilityData = characterAbility[character] || {
+
+        maxCharge:1,
+        startCharge:1
+
+    };
 
     db.ref("players/" + character).set({
 
@@ -68,19 +89,12 @@ function startBind() {
         gold:15000,
 
         ability:{
-
           ready:true,
-
           cooldown:0,
-
-          charge:1,
-
-          maxCharge:1,
-
+          charge:abilityData.startCharge,
+          maxCharge:abilityData.maxCharge,
           active:false,
-
           status:"normal"
-
       }
 
     })

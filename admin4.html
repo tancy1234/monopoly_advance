@@ -499,17 +499,19 @@ function loadAbilityPlayers(){
 
 function refreshAbility(){
 
-let char=document.getElementById("abilityPlayer").value;
+    let char=document.getElementById("abilityPlayer").value;
 
-db.ref("players/"+char+"/ability").update({
+    let p=players[char];
 
-charge:1,
-active:false,
-status:"normal"
+    if(!p || !p.ability)return;
 
-});
+    let max=p.ability.maxCharge||1;
 
-alert(char+" 技能刷新");
+    let charge=Math.min((p.ability.charge||0)+1,max);
+
+    db.ref("players/"+char+"/ability").update({
+        charge:charge
+    });
 
 }
 
