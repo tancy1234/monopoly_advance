@@ -506,53 +506,38 @@ function refreshAbility(){
 
 
     if(!p || !p.ability){
-
         alert("No ability");
-
         return;
-
     }
 
 
-    let maxCharge = 1;
-
-
-    if(char=="hera" || char=="abraham"){
-
-        maxCharge = 3;
-
-    }
-
-
-
-    let charge=Math.min(
+    let charge =
+    Math.min(
         (p.ability.charge || 0) + 1,
-        maxCharge
+        p.ability.maxCharge
     );
-
 
 
     db.ref("players/"+char+"/ability").update({
 
-        charge:charge,
-
-        maxCharge:maxCharge
+        charge:charge
 
     })
     .then(()=>{
 
         alert(
-            char.toUpperCase()
-            +" 技能点增加\n"
-            +"现在: "
-            +charge
-            +"/"
-            +maxCharge
+        char.toUpperCase()
+        +" 技能点增加\n"
+        +"现在: "
+        +charge
+        +"/"
+        +p.ability.maxCharge
         );
 
     });
 
 }
+
 function clearAbility(){
 
 let char=document.getElementById("abilityPlayer").value;
