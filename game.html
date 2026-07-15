@@ -609,6 +609,13 @@ function useAbility(){
         break;
 
         case "abraham":
+            if(ability.charge <= 0){
+
+                alert("没有羔羊可以献祭");
+
+                return;
+
+            }
 
             ability.charge--;
 
