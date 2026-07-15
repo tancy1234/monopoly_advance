@@ -506,11 +506,29 @@ function refreshAbility(){
     if(!p || !p.ability)return;
 
 
-    let maxCharge=1;
-
-    if(char=="hera"){
-        maxCharge=3;
+    if(!p || !p.ability){
+        alert("No ability");
+        return;
     }
+
+
+    let maxCharge;
+
+
+    if(char=="abraham"){
+
+        maxCharge=3;
+
+    }else if(char=="hera"){
+
+        maxCharge=3;
+
+    }else{
+
+        maxCharge=1;
+
+    }
+
 
 
     let charge=Math.min(

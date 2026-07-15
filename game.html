@@ -485,33 +485,25 @@ function useAbility(){
 
     
 
-    if(!p || !p.ability){
-        alert("No ability");
-        return;
-    }
+    if(me=="hera"){
 
+        if(ability.charge<3){
 
-    let maxCharge;
+            alert("需要3颗技能点才能发动");
 
-
-    if(char=="abraham"){
-
-        maxCharge=3;
-
-    }else if(char=="hera"){
-
-        maxCharge=3;
+            return;
+        }
 
     }else{
 
-        maxCharge=1;
+        if(ability.charge<=0){
+
+            alert("没有技能次数");
+
+            return;
+        }
 
     }
-
-    let charge=Math.min(
-        (p.ability.charge||0)+1,
-        maxCharge
-    );
 
     if(ability.cooldown>0){
         alert("技能冷却中");
@@ -652,12 +644,7 @@ function useAbility(){
 
         gold:players[me].gold,
 
-        ability:ability,
-
-        charge:charge,
-
-        maxCharge:maxCharge
-
+        ability:ability
 
     });
 
