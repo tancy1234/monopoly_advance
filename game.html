@@ -338,7 +338,7 @@ function showAbility(){
         medusa:{
             name:"🐍 石化",
             description:
-            "每次经过起点刷新使用， 选择一名玩家停留一回合"
+            "每次经过起点刷新使用<br>选择一名玩家停留一回合"
         },
 
         apollo:{
@@ -350,7 +350,7 @@ function showAbility(){
         knight:{
             name:"🔥 偷窃",
             description:
-            "支付2000金币获得技能"
+            "每次经过起点刷新使用<br>支付2000金币，得到一名角色的技能"
         },
 
         esther:{
@@ -582,6 +582,26 @@ function useAbility(){
 
         break;
 
+        case "knight":
+
+            if(players[me].gold < 2000){
+                alert("金币不足，需要2000金币");
+                return;
+            }
+
+            players[me].gold -= 2000;
+
+            ability.charge--;
+            ability.active=true;
+            ability.status="steal_ready";
+
+
+            alert(
+            "🏍️ 恶灵骑士发动偷窃！\n"
+            +"支付2000金币\n"
+            +"请通知Admin选择复制的角色技能"
+            );
+        break;
         default:
 
 
