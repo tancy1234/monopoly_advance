@@ -350,7 +350,7 @@ function showAbility(){
         knight:{
             name:"🔥 偷窃",
             description:
-            "每次经过起点刷新使用<br>支付2000金币，得到一名角色的技能"
+            "每次经过起点刷新使用<br>支付2000金币，得到一名角色的技能，使用后即消失"
         },
 
         esther:{
@@ -623,8 +623,13 @@ function useAbility(){
 
     }
 
-    db.ref("players/"+me+"/ability")
-    .set(ability);
+    db.ref("players/"+me).update({
+
+        gold:players[me].gold,
+
+        ability:ability
+
+    });
 
     showAbility();
 }
