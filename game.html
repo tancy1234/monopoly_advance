@@ -308,13 +308,13 @@ function showAbility(){
         zeus:{
             name:"⚡ 制霸闪电",
             description:
-            "经过起点刷新一次<br>发动后下一次玩家战斗直接胜利，不获得金币"
+            "经过起点刷新一次<br>与玩家战斗直接胜利，不获得金币"
         },
 
         hera:{
             name:"💗 爱神捆绑",
             description:
-            "选择两名玩家绑定，共享负面效果"
+            "经过起点 技能点+1（最多3）<br>支付3技能点发动技能，选择两名玩家绑定，下一次共享负面效果"
         },
 
         mary:{
@@ -485,24 +485,30 @@ function useAbility(){
 
 
 
-    if(ability.charge<=0){
+    if(me=="hera"){
 
-        alert("没有技能次数");
+        if(ability.charge<3){
 
-        return;
+            alert("需要3颗技能点才能发动");
+
+            return;
+        }
+
+    }else{
+
+        if(ability.charge<=0){
+
+            alert("没有技能次数");
+
+            return;
+        }
 
     }
-
 
     if(ability.cooldown>0){
-
         alert("技能冷却中");
-
         return;
-
     }
-
-
 
     switch(me){
 
@@ -539,7 +545,23 @@ function useAbility(){
 
         break;
 
+        case "hera":
 
+            if(ability.charge < 3){
+
+                alert("需要3颗技能点才能发动");
+
+                return;
+
+            }
+
+            ability.charge = 0;
+
+            alert(
+            "爱神捆绑发动！\n请通知Admin选择的两位玩家进行绑定。"
+            );
+
+        break;
 
         default:
 
@@ -552,8 +574,15 @@ function useAbility(){
     
 
     // 开始冷却
-    ability.cooldown=
-    ability.maxCooldown;
+    if(ability.maxCooldown){
+
+        ability.cooldown=ability.maxCooldown;
+
+    }else{
+
+        ability.cooldown=0;
+
+    }
 
     db.ref("players/"+me+"/ability")
     .set(ability);
