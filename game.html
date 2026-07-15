@@ -332,13 +332,13 @@ function showAbility(){
         hades:{
             name:"💀 冥王波动",
             description:
-            "反弹负面技能"
+            "经过起点刷新使用<br>被施加负面技能时，可无效该技能并施加给使用者"
         },
 
         medusa:{
             name:"🐍 石化",
             description:
-            "选择玩家停留一回合"
+            "每次经过起点刷新使用， 选择一名玩家停留一回合"
         },
 
         apollo:{
@@ -534,12 +534,15 @@ function useAbility(){
 
         case "hades":
 
+            ability.charge--;
 
             ability.active=true;
 
+            ability.status="hades_ready";
+
 
             alert(
-            "💀 哈迪斯发动冥王波动"
+            "💀 哈迪斯发动冥王波动！\n负面技能将被反弹"
             );
 
 
@@ -560,6 +563,22 @@ function useAbility(){
             alert(
             "爱神捆绑发动！\n请通知Admin选择的两位玩家进行绑定。"
             );
+
+        break;
+
+        case "medusa":
+
+            ability.charge--;
+
+            ability.active=true;
+
+            ability.status="medusa_ready";
+
+
+            alert(
+            "🐍 美杜莎发动石化！\n请通知Admin选择一名玩家停留一回合"
+            );
+
 
         break;
 
