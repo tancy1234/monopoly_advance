@@ -356,13 +356,13 @@ function showAbility(){
         esther:{
             name:"⭐ 明亮之星",
             description:
-            "起手特殊能力"
+            "该角色将以25000金币和等级2起手"
         },
 
         abraham:{
             name:"🐑 献祭羔羊",
             description:
-            "消耗羔羊抵消惩罚"
+            "该角色起手拥有1只羔羊<br>每次经过起点+一只羔羊（Max 3），每次受到罚款或地盘收购时可献祭一只羔羊无效"
         },
 
         maxhine:{
@@ -483,6 +483,11 @@ function useAbility(){
 
     let ability = players[me].ability;
 
+    let startGold = 15000;
+    
+    if(character=="esther"){
+        startGold = 25000;
+    }
 
 
     if(me=="hera"){
@@ -601,6 +606,22 @@ function useAbility(){
             +"支付2000金币\n"
             +"请通知Admin选择复制的角色技能"
             );
+        break;
+
+        case "abraham":
+
+            ability.charge--;
+
+            ability.active=true;
+
+            ability.status="sacrifice_ready";
+
+
+            alert(
+            "🐑 亚伯拉罕献祭羔羊发动！\n下一次罚款或地盘收购将被无效"
+            );
+
+
         break;
         default:
 
